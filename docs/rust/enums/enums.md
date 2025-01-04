@@ -105,10 +105,6 @@ Size of an enum is the size of tag pluse size of biggest member.
 
 ### 2.1. Nested Enum
 
-if you have one enum type nested in another you may be able to merge their tags together so you don't need to do multiple comparisons (Ex: The compiler might compress Option<Result<A, B>> into a OptionResultAB which only requires a single tag).
-
-Another well known example is how Option<NonNull<T>> has the same size as *mut T since null can be used as the None value. There are also a few other similar cases like function pointers.
-
 ### 2.2. Enum usages
 
 #### 2.2.1. Matching pattern
