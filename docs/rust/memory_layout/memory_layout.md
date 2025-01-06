@@ -37,7 +37,7 @@ let hello_String = String::from("Hello")
 
 Literal string
 ``` rust
-let literal_str = String::from("Literal String")
+let literal_str = "Literal String"
 let slice = &literal_str[8..]
 ```
 ![str.drawio.svg](images/str.drawio.svg "Memory layout of str")
@@ -137,8 +137,6 @@ let arc_mutext : Arc<Mutex<i32>> = Arc::new(Mutex::new(100))
 
 ### 1. Closure
 
-Think of closure as lambdas in C++, or arrow function in JavaScript.
-
 Rust uses struct to present closure.
 
 ```rust
@@ -148,3 +146,5 @@ let print = || println!("color: {}", color);
 ```
 
 ![fn_closure.drawio.svg](images/fn_closure.drawio.svg "Memory map of closure as Fn Trait Object")
+
+[Read more on closure ...](../closure/closure.md)
