@@ -90,7 +90,7 @@ enum CarTag{
 ```
 ![box_enum.drawio.svg](images/box_enum.drawio.svg "Memory layout of enum with box")
 
-* Rust automatically optimizes Option which contains smart pointer data type (e.g: Box)
+* Rust automatically optimizes Options<T> which contains smart pointer data type (e.g: Box)
 ```rust
 // Option
 enum Option<T>{
@@ -103,8 +103,9 @@ let opt: Options<Box<i32>> = Options(Box::new(100)));
 ```
 ![option.drawio.svg](images/option.drawio.svg "Memory layout of option")
 
+* In case of optimization Options<T>, the matching pattern works by check if the pointer is NULL or not, corresponding to *None* and *Some*
 
-* Matching pattern with enum is just a comparing of the tag value.
+* Matching pattern with enum is just a comparation of the tag value.
 
 ![match_enum_asembly.png](images/match_enum_asembly.png "Asmebly of Matching pattern")
 
