@@ -110,6 +110,38 @@ let opt: Options<Box<i32>> = Options(Box::new(100)));
 ![match_enum_asembly.png](images/match_enum_asembly.png "Asmebly of Matching pattern")
 
 
+### Box
+
+* Use smart pointer Box<> to store data on Heap
+
+* There a 2 use case:
+    * Case 1: Declare a variable which has unknow size at compile time
+    ```rust
+    trait Vehicle { 
+        fn drive(&self);
+    }
+
+    
+    let t : dyn Vehicle // Wrong: define t as an unsize trat object
+    let t : Box<dyn Vehicle>; // Correct: define t as a pointer which point to trai object in heap
+    t = Box::new(Car);
+    t.drive();
+    ```
+
+
+
+    * Case 2: Recursive data type.
+    ```rust
+    // : 
+    enum List {
+        Cons(i32, List),        // Wrong: size of List is unknow
+        Cons(i32, Box<List>),   // Correct: sizeof Box is known
+        Nil,
+    }
+    ```
+    ![box_recursive_type.png](images/box_recursive_type.png "Recursive data type")
+
+
 ### Trait behaviors
 
 
@@ -133,10 +165,45 @@ let s2 = s1.clone();    // s1 and s2 both are valid
 
 ### Trait Object
 
+* Reference of trait type is called Trait Object:
+```rust
+trait Shape {
+    fn area(&self);
+}
 
-* Static dispatch: passing an instance of a data type to function. Also means the type of instance is known at compile time.
+// trait type has unknow size
+let t : Box<dyn Shape>
 
-* Dynamic dispatch: passing an object which implement a trait. The type of object is unknow at compile time, because multiple types can implement a same trait.
+// trait object has known size
+// trait is fat pointer which contains 2 other pointers
+let t : &dyn Shape = &rect;
+
+```
+
+![trait_object.drawio.svg](images/trait_object.drawio.svg "Memory map of Trait Object")
+
+
+### Closure
+
+Rust uses struct to present closure.
+
+```rust
+let color = String::from("green");
+let print = || println!("color: {}", color);  
+// print is a closure
+```
+
+![fn_closure.drawio.svg](images/fn_closure.drawio.svg "Memory map of closure as Fn Trait Object")
+
+[Read more on closure ...](../closure/closure.md)
+
+
+
+### Dispatching
+
+* Static dispatch: passing struct of data type. Also means the type of instance is known at compile time.
+
+* Dynamic dispatch: passing a trait object (a reference to trait type). The type of object is unknow at compile time, because multiple types can implement a same trait.
 
 
 ```rust
@@ -188,28 +255,10 @@ pub fn dynamic_sum_up_area(a: &dyn Shape<T = f64>, b: &dyn Shape<T = f64>) -> (f
 }
 ```
 
-![trait_object.drawio.svg](images/trait_object.drawio.svg "Memory map of Trait Object")
-
-
-### Closure
-
-Rust uses struct to present closure.
-
-```rust
-let color = String::from("green");
-let print = || println!("color: {}", color);  
-// print is a closure
-```
-
-![fn_closure.drawio.svg](images/fn_closure.drawio.svg "Memory map of closure as Fn Trait Object")
-
-[Read more on closure ...](../closure/closure.md)
-
-
 
 ### Reference count
 
-* Using RC to have:
+* Using RC to have multiple pointers point to the same value
 
 ![refcount.drawio.svg](images/refcount.drawio.svg "Memory map of Reference count")
 
