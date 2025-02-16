@@ -12,18 +12,29 @@ struct User {
 ### Tupple
 
 ``` rust
-let  a : (char, u8 i32) = ('a', 100, 500);
+// tupple lives on stack
+let  tupple : (char, u8 i32) = ('a', 100, 500);
 ```
 ![tupple.drawio.svg](images/tupple.drawio.svg "Memory layout of tupple")
 
 
 ### Array
 
-
 ``` rust
+// array lives on Stack
 let array : [i32, 3] = [5, 10, 15];
 ```
 ![array.drawio.svg](images/array.drawio.svg "Memory layout of array")
+
+
+### Reference
+
+* Reference contains an address.
+* 8bytes on 64bit OS. 4 bytes on 32bit OS.
+
+* Mutable & Immutable reference are same in memory layout. It's a deference in how they're used.
+
+![reference.drawio.svg](images/reference.drawio.svg "Memory layout of reference")
 
 
 ### Vector
@@ -39,6 +50,8 @@ let sl : &[i32] = &v[0..2];
 ### String
 
 String
+* *String* is standard container.
+
 ``` rust
 let hello_String = String::from("Hello")
 ```
@@ -46,9 +59,12 @@ let hello_String = String::from("Hello")
 
 
 Literal string
+* *str* is rust's core string type.
+* Literal string points to data in Code segment
 ``` rust
 let literal_str = "Literal String"
 let slice = &literal_str[8..]
+// str and slice have same memory layout
 ```
 ![str.drawio.svg](images/str.drawio.svg "Memory layout of str")
 
@@ -75,11 +91,15 @@ enum CarTag{
 ```
 ![enum.drawio.svg](images/enum.drawio.svg "Memory layout of enum")
 
+![enum_suite_case.drawio.svg](images/enum_suite_case.drawio.svg "Enum as suitecase")
+
+
 * Size of enum IP is the size of the highest value.
 
 * Size of enum CarTag is the sum of sizes of tag, TagString
 
 * Using smartpoint, e.g: Box, to reduce the size of enum
+
 
 ```rust
 enum CarTag{
@@ -114,6 +134,13 @@ let opt: Options<Box<i32>> = Options(Box::new(100)));
 
 * Use smart pointer Box<> to store data on Heap
 
+```rust
+    let b = Box::new(5);
+```
+
+![box.drawio.svg](images/box.drawio.svg "Box")
+
+
 * There a 2 use case:
     * Case 1: Declare a variable which has unknow size at compile time
     ```rust
@@ -121,13 +148,11 @@ let opt: Options<Box<i32>> = Options(Box::new(100)));
         fn drive(&self);
     }
 
-    
-    let t : dyn Vehicle // Wrong: define t as an unsize trat object
-    let t : Box<dyn Vehicle>; // Correct: define t as a pointer which point to trai object in heap
+    let t : dyn Vehicle         // Wrong: declare t as an unknow size data
+    let t : Box<dyn Vehicle>;   // Correct: declare t as a pointer which point to trai object in heap
     t = Box::new(Car);
     t.drive();
     ```
-
 
 
     * Case 2: Recursive data type.
@@ -151,9 +176,9 @@ let a1: int = 10;
 let a2: int = a1;
 
 
-// struct or container data types has unknow size -> have move trait
+// Container stores unknow amount of data at compile time -> have move trait
 let s1 = String::from("Hello");
-let s2 = s1;    // s1 no longer valid
+let s2 = s1;            // s1 no longer valid
 
 
 // call clone() to dupplicate the value if the clone function is avaiable
@@ -165,22 +190,29 @@ let s2 = s1.clone();    // s1 and s2 both are valid
 
 ### Trait Object
 
-* Reference of trait type is called Trait Object:
+* Reference or pointer of value, which implement a Trait, is called Trait Object:
 ```rust
+struct Rectangle {
+    top_left: ...,
+    bottom_right: ...,
+}
+
 trait Shape {
     fn area(&self);
 }
 
-// trait type has unknow size
-let t : Box<dyn Shape>
-
+let t : dyn Shape;      // Wrong: declare t as an unknow size data
+let t : &dyn Shape;     // Correct
+let t : Box<Shape>;     // Correct
 // trait object has known size
 // trait is fat pointer which contains 2 other pointers
-let t : &dyn Shape = &rect;
-
 ```
 
 ![trait_object.drawio.svg](images/trait_object.drawio.svg "Memory map of Trait Object")
+
+
+Use trait object for Dynamic dispatching.
+[Read more on Trait bound and dispatching ...](../trai_bound_and_dispatching/trai_bound_and_dispatching.md)
 
 
 ### Closure
@@ -196,64 +228,6 @@ let print = || println!("color: {}", color);
 ![fn_closure.drawio.svg](images/fn_closure.drawio.svg "Memory map of closure as Fn Trait Object")
 
 [Read more on closure ...](../closure/closure.md)
-
-
-
-### Dispatching
-
-* Static dispatch: passing struct of data type. Also means the type of instance is known at compile time.
-
-* Dynamic dispatch: passing a trait object (a reference to trait type). The type of object is unknow at compile time, because multiple types can implement a same trait.
-
-
-```rust
-
-// Point
-pub struct Point<T> {
-    x: T,
-    y: T,
-}
-
-// trait
-pub trait Shape {
-    type T;
-    fn area(&self) -> Self::T;
-}
-
-// data type
-pub struct Rectangle<T> {
-    top_left: Point<T>,
-    bottom_right: Point<T>,
-}
-
-// implement trait for data type
-impl<T> Shape for Rectangle<T>
-{
-    fn area(&self) -> T {
-        let width = self.bottom_right.x - self.top_left.x;
-        let height = self.top_left.y - self.bottom_right.y;
-        return width * height
-    }
-}
-
-
-// static dispatch
-pub fn static_sum_up_area(a: impl Shape<T = f64>, b: impl Shape<T = f64>) -> (f64, f64) {
-    // both a & b are instances of data type
-    // compiler knows the area() is Rectangle.area()
-    return a.area() + b.area()
-}
-
-//dynamic dispatch
-pub fn dynamic_sum_up_area(a: &dyn Shape<T = f64>, b: &dyn Shape<T = f64>) -> (f64, f64) {
-    // both a & b are trait objects
-    // compiler does not know which area() func used here
-    // becase area() would be either Rectangle.area() or Triagle.area()
-    // area() is only known on runtime, when the value is passed to func
-    // function pointer vTable will point to the proper area() in runtime 
-    return a.area() + b.area()
-}
-```
 
 
 ### Reference count
