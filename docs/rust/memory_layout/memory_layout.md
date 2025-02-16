@@ -34,6 +34,11 @@ let array : [i32, 3] = [5, 10, 15];
 
 * Mutable & Immutable reference are same in memory layout. It's a deference in how they're used.
 
+```rust
+let i : i32 = 10;
+let ref : &i32 = &i;
+```
+
 ![reference.drawio.svg](images/reference.drawio.svg "Memory layout of reference")
 
 
