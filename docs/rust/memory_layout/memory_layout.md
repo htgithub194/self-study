@@ -1,4 +1,4 @@
-### Struct
+### Struct & tupple
 ```rust
 struct User {
     id: char,
@@ -7,15 +7,13 @@ struct User {
     ...
 }
 ```
-![struct.drawio.svg](images/struct.drawio.svg "Memory layout of struct")
 
-### Tupple
-
-``` rust
+```rust
 // tupple lives on stack
-let  tupple : (char, u8 i32) = ('a', 100, 500);
+let tupple : (char, u8 i32) = ('a', 100, 500);
 ```
-![tupple.drawio.svg](images/tupple.drawio.svg "Memory layout of tupple")
+
+![struct.drawio.svg](images/struct.drawio.svg "Memory layout of struct")
 
 
 ### Array
@@ -115,7 +113,7 @@ enum CarTag{
 ```
 ![box_enum.drawio.svg](images/box_enum.drawio.svg "Memory layout of enum with box")
 
-* Rust automatically optimizes Options<T> which contains smart pointer data type (e.g: Box)
+* Rust automatically optimizes `Options<T>` which contains smart pointer data type (e.g: Box)
 ```rust
 // Option
 enum Option<T>{
@@ -177,8 +175,8 @@ let opt: Options<Box<i32>> = Options(Box::new(100)));
 
 ```rust
 // static data types has fixed size -> have copy trait
-let a1: int = 10;
-let a2: int = a1;
+let a1: i32 = 10;
+let a2: i32 = a1;
 
 
 // Container stores unknow amount of data at compile time -> have move trait
@@ -197,20 +195,26 @@ let s2 = s1.clone();    // s1 and s2 both are valid
 
 * Reference or pointer of value, which implement a Trait, is called Trait Object:
 ```rust
+trait Shape {
+    fn area(&self);
+}
+
 struct Rectangle {
     top_left: ...,
     bottom_right: ...,
 }
 
-trait Shape {
-    fn area(&self);
+impl Shape for Rectangle {
+    fn area(...)
 }
 
-let t : dyn Shape;      // Wrong: declare t as an unknow size data
-let t : &dyn Shape;     // Correct
-let t : Box<Shape>;     // Correct
-// trait object has known size
-// trait is fat pointer which contains 2 other pointers
+let rec = Rectangle;
+
+let t : dyn Shape;  // Wrong: declare t as an unknow size data
+let t : &dyn Shape = &rec;      // Correct
+let t : Box<dyn Shape> = &rec;  // Correct
+// trait object is known size.
+// trait object is a fat pointer which contains 2 other pointers
 ```
 
 ![trait_object.drawio.svg](images/trait_object.drawio.svg "Memory map of Trait Object")
@@ -228,6 +232,9 @@ Rust uses struct to present closure.
 let color = String::from("green");
 let print = || println!("color: {}", color);  
 // print is a closure
+
+// exec closure:
+print()
 ```
 
 ![fn_closure.drawio.svg](images/fn_closure.drawio.svg "Memory map of closure as Fn Trait Object")
