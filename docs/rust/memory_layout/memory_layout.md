@@ -170,25 +170,26 @@ let opt: Options<Box<i32>> = Options(Box::new(100)));
     ![box_recursive_type.png](images/box_recursive_type.png "Recursive data type")
 
 
-### Trait behaviors
+### Copy & Clone Trait
 
 
 ```rust
-// static data types has fixed size -> have copy trait
-let a1: i32 = 10;
-let a2: i32 = a1;
-
-
-// Container stores unknow amount of data at compile time -> have move trait
+// default: move semantics
 let s1 = String::from("Hello");
 let s2 = s1;            // s1 no longer valid
 
+// Implicit in-expensive bit-wise copy
+let a1: i32 = 10;
+let a2: i32 = a1;
 
-// call clone() to dupplicate the value if the clone function is avaiable
+// Explicit bit-wise copy
 let s2 = s1.clone();    // s1 and s2 both are valid
 ```
 
 ![copy_move_clone.drawio.svg](images/copy_move_clone.drawio.svg "Some trait's behaviors")
+
+* Clone is supertrait of Copy
+* Copy is simply a bit-wise copy
 
 
 ### Trait Object
