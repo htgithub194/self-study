@@ -144,25 +144,93 @@ fn asynchronous_task () -> impl Future<Output = usize> {
 ```
 
 
-### Nested Async Await
+#### Nested Async Await
 
 
-Async functions inside another async function.
+* Async functions inside another async function.
 
 
 ```rust
 // nested async task
 async fn nested_async_task () -> usize {
     println!{"call and wait till foo() is complete"};
-    foo.await()
+    foo.await();
 
     println!{"call and wait till bar() is complete"};
-    bar.await()
+    bar.await();
 }
 ```
 
 
-![state_machine](images/state_machine.drawio.svg "state_machine")
+Actually, before the introduction of async-await, async task was implemented as a State Machine.
+
+
+```rust
+Enum State<T> {
+    State_Start,
+    State_foo(Option<T>),    // before foo() completed
+    State_bar(x, y, z),     // before bar() completed
+    State_End,
+}
+
+impl<T> Future for State {
+    type Output = ();
+
+    fn poll(&mut self) -> Poll<Self::Output> {
+        
+        match self {
+
+            State::State_Start => {
+                println!{"call and wait till foo() is complete"};
+
+                // change current state
+                *self = State::State_foo(data, ...);
+                return self.poll();
+            }
+
+            State::State_foo(data, ...) => {
+
+                if let Poll::Ready() = foo.poll() {
+                    // change current state
+                    *self = State::State_bar(data, ...);
+                    return self.poll();
+                }
+                else {
+                    Poll::Pending
+                }
+            }
+           
+           State::State_bar(data, ...) => {
+
+                if let Poll::Ready() = foo.poll() {
+                    // change current state
+                    *self = State::State_End;
+                    return self.poll();
+                }
+                else {
+                    Poll::Pending
+                }
+            }
+
+            State::State_End => {
+                Poll::Ready(())
+            }
+            
+        }
+    }
+}
+```
+
+The first polling,
+
+
+![1st_poll](images/1st_poll.drawio.svg "1st_poll")
+
+
+
+
+
+![2nd_poll](images/2nd_poll.drawio.svg "2nd_poll")
 
 
 ### Future
