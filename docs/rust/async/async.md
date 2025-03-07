@@ -69,6 +69,37 @@ fn main() {
 ### Async Await key words
 
 
+Async Await key words are use to write asynchronous task.
+
+
+```rust
+async fn main {
+    bar.await();
+}
+
+
+async fn asynchronous_task () -> uszie {
+    println!{"hello world"};                    // work
+    let n_char = read_from_disk().await();      // wait ...
+    return n_char                               // work
+}
+//  is equivalent with 
+fn asynchronous_task () -> impl Future<Output = usize> {
+    // 
+}
+
+// nested async task
+async fn nested_async_task () -> usize {
+    println!{"call and wait till foo() is complete"};
+    foo.await()
+
+    println!{"call and wait till bar() is complete"};
+    bar.await()
+}
+```
+
+
+![state_machine](images/state_machine.drawio.svg "state_machine")
 
 
 
