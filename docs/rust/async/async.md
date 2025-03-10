@@ -25,7 +25,7 @@
     + At a point of time, one thread can execute only 1 task, but the thread can switch between it's tasks.
 
 
-![concurency_vs_paralellism](images/concurency_vs_paralellism.drawio.svg "concurency_vs_paralellism")
+    ![concurency_vs_paralellism](images/concurency_vs_paralellism.drawio.svg "concurency_vs_paralellism")
 
 
 * Comments & Questions:
@@ -41,16 +41,16 @@
     The CPU core runs much faster than I/O devices. So, for e.g, it has to wait for I/O drivers to write something to disk, or wait for I/O socket, ...etc.
 
 
-![tasks](images/tasks.drawio.svg "tasks")
+    ![tasks](images/tasks.drawio.svg "tasks")
 
 
 * Idle CPU core is a waste of resource.
     + In Paralellism, thread must yeild the CPU to another thread, and let the kernel schedule to have chance to run again.
-        Ofcouse, the next thread might belong to another program.
+        Ofcourse, the next thread might belong to another program.
     + In Concurrency, NO yeilding happends. Thread will switch to another task, if current task are waiting for I/O.
 
 
-![concurency_vs_paralellism_in_deep_](images/concurency_vs_paralellism_in_deep.drawio.svg "concurency_vs_paralellism_in_deep_")
+    ![concurency_vs_paralellism_in_deep_](images/concurency_vs_paralellism_in_deep.drawio.svg "concurency_vs_paralellism_in_deep_")
 
 
 * The image shows that the Green Task might be completed earlier, compare to Paralellism.
@@ -64,175 +64,233 @@ It's time for Runtime to comes as a rescuer.
 ### Runtime
 
 
-The most popular runtime for Rust is *Tokio runtime*
+* The most popular runtime for Rust is *Tokio runtime*
+
+* Runtime provide mechanisms for:
+    * Store list of tasks run in concurrency
+    * Which task will be run next
+    * When to re-invoke a pending task
+    * I/O functions for async programming
+    ...
 
 
-Runtime provide mechanisms for:
-* Store list of tasks run in concurrency
-* Which task will be run next
-* When to re-invoke a pending task
-* I/O functions for async programming
-...
+    ```rust
+    // example from https://tokio.rs/tokio/tutorial/spawning
+    use tokio::net::TcpListener;
 
+    #[tokio::main]
+    async fn main() {
+        let listener = TcpListener::bind("127.0.0.1:6379").await.unwrap();
 
-```rust
-// example from https://tokio.rs/tokio/tutorial/spawning
-use tokio::net::TcpListener;
-
-#[tokio::main]
-async fn main() {
-    let listener = TcpListener::bind("127.0.0.1:6379").await.unwrap();
-
-    loop {
-        let (socket, _) = listener.accept().await.unwrap();
-        // A new task is spawned for each inbound socket. The socket is
-        // moved to the new task and processed there.
-        tokio::spawn(async move {
-            process(socket).await;
-        });
+        loop {
+            let (socket, _) = listener.accept().await.unwrap();
+            // A new task is spawned for each inbound socket. The socket is
+            // moved to the new task and processed there.
+            tokio::spawn(async move {
+                process(socket).await;
+            });
+        }
     }
-}
-```
+    ```
 
 
-#### Note for #[tokio::main]
+* Note for #[tokio::main]
 
-```rust
-#[tokio::main]
-async fn main() {
-    code_inside_main_fn();
-}
 
-// is equivalent to
-
-fn main() {
-    let mut rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(async {
+    ```rust
+    #[tokio::main]
+    async fn main() {
         code_inside_main_fn();
-    })
-}
-```
+    }
+
+    // is equivalent to
+
+    fn main() {
+        let mut rt = tokio::runtime::Runtime::new().unwrap();
+        rt.block_on(async {
+            code_inside_main_fn();
+        })
+    }
+    ```
+
+* Tokio run time has 2 operation mode:
+    * Single-thread runtime: all tasks, executor, reactor are placed inside 1 thread.
+    * Multi-thread runtime: using multiple thread to execute tasks (thread pool)
 
 
-#### Executor & Waker
+    ![thread_pool](images/thread_pool.drawio.svg "thread pool")
 
-![executor](images/executor.drawio.svg "executor")
+
+* Bellow is how a task is randomly moved to and be executed in a thread.
+* The mechanism to drive I/O events is based on Operating System and the system call must be Non-Blocking.
+    * Linux: epoll
+    * Mac: kqueue
+    * Windows: IOCP Input/output completion port
+
+    ![runtime](images/runtime.drawio.svg "runtime")
+
+
+* In Linux, epoll can be use to ask kernel to mornitor for a I/O, which represented by a File Description (fd) number.
+    * Epoll is non-blocking, the result is return immediately.
+
+    ![epoll](images/epoll.drawio.svg "epoll")
 
 
 
 ### Async Await
 
 
-Async Await key words are use to write asynchronous task.
+* Async Await key words are use to write asynchronous task.
+
+    ```rust
+    async fn main {
+        asynchronous_task.await();
+    }
 
 
-```rust
-async fn main {
-    bar.await();
-}
+    async fn asynchronous_task () -> uszie {
+        println!{"hello world"};                    // work
+        let n_char = read_from_disk().await();      // wait ...
+        return n_char                               // work
+    }
+    //  is equivalent with 
+    fn asynchronous_task () -> impl Future<Output = usize> {
+        async {
+            // ...
+        } 
+    }
+    ```
+
+* Async function is somehow equipvalent with a Future. Let's find out what is Future.
+
+* Future is defined as:
+> A future is a value that might not have finished computing yet. This kind of “asynchronous value” makes it possible for a thread to continue doing useful work while it waits for the value to become available.
 
 
-async fn asynchronous_task () -> uszie {
-    println!{"hello world"};                    // work
-    let n_char = read_from_disk().await();      // wait ...
-    return n_char                               // work
-}
-//  is equivalent with 
-fn asynchronous_task () -> impl Future<Output = usize> {
-    // 
-}
-```
+* The Future's defination matchs with the waiting part in our task above.
+
+    ![tasks](images/tasks.drawio.svg "tasks")
+
+* The core method of future, poll, attempts to resolve the future into a final value
+
+* We can write a poll funtion in a simplest way:
+    * call read() with *O_NON_BLOCKING* flag, it means, check with kernel if a FD is ready to read.
+    * if fd is ready, the data is return from *read()*, future is done.
+    * if fd is not ready, *read()* returns *WOULD_BLOCK* ->> ask waker to monitor the fd.
+    * the poll will be called again, when waker signals executor.
 
 
-#### Nested Async Await
+    ```rust
+    // simplest future
+    fn poll(waker) {
 
+        let r = read(fd, ops, O_NON_BLOCKING);
 
-* Async functions inside another async function.
+        if r == OK {
+            return r.data;
+        }
 
-
-```rust
-// nested async task
-async fn nested_async_task () -> usize {
-    println!{"call and wait till foo() is complete"};
-    foo.await();
-
-    println!{"call and wait till bar() is complete"};
-    bar.await();
-}
-```
-
-
-Actually, before the introduction of async-await, async task was implemented as a State Machine.
-
-
-```rust
-Enum State<T> {
-    State_Start,
-    State_foo(Option<T>),    // before foo() completed
-    State_bar(x, y, z),     // before bar() completed
-    State_End,
-}
-
-impl<T> Future for State {
-    type Output = ();
-
-    fn poll(&mut self) -> Poll<Self::Output> {
-        
-        match self {
-
-            State::State_Start => {
-                println!{"call and wait till foo() is complete"};
-
-                // change current state
-                *self = State::State_foo(data, ...);
-                return self.poll();
-            }
-
-            State::State_foo(data, ...) => {
-
-                if let Poll::Ready() = foo.poll() {
-                    // change current state
-                    *self = State::State_bar(data, ...);
-                    return self.poll();
-                }
-                else {
-                    Poll::Pending
-                }
-            }
-           
-           State::State_bar(data, ...) => {
-
-                if let Poll::Ready() = foo.poll() {
-                    // change current state
-                    *self = State::State_End;
-                    return self.poll();
-                }
-                else {
-                    Poll::Pending
-                }
-            }
-
-            State::State_End => {
-                Poll::Ready(())
-            }
-            
+        if r == WOULD_BLOCK {
+            wake.push(fd, ops);
         }
     }
-}
-```
-
-The first polling,
+    ```
 
 
-![1st_poll](images/1st_poll.drawio.svg "1st_poll")
+* How to write a complex Future.
+    * And how the poll() function knows where to continue for the 2nd poll.
+
+    ```rust
+    // nested poll function
+    fn poll () {
+        // work before read
+        // future 1
+        fut_read_socket.await();
+        // work before write
+        // future 2
+        fut_write_socket.await();
+    }
+    ```
 
 
+* Actually, before the introduction of async-await, async task was implemented as a State Machine.
 
 
+    ```rust
+    Enum State<T> {
+        State_Start,
+        State_Reading(Option<T>),    // before read() completed
+        State_Writing(x, y, z),     // before write() completed
+        State_End,
+    }
 
-![2nd_poll](images/2nd_poll.drawio.svg "2nd_poll")
+    impl<T> Future for State {
+        type Output = ();
+
+        fn poll(&mut self) -> Poll<Self::Output> {
+            
+            match self {
+
+                State::State_Start => {
+                    println!{"some work before Read"};
+
+                    // change state
+                    *self = State::State_Reading(data, ...);
+                    return self.poll();
+                }
+
+                State::State_Reading(data, ...) => {
+
+                    if let Poll::Ready() = fut_read_socket.poll() {
+
+                        println!{"some work before Write"};
+                
+                        // change state
+                        *self = State::State_Writing(data, ...);
+                        return self.poll();
+                    }
+                    else {
+                        Poll::Pending
+                    }
+                }
+            
+            State::State_Writing(data, ...) => {
+
+                    if let Poll::Ready() = fut_write_socket.poll() {
+                    
+                        // change state
+                        *self = State::State_End;
+                        return self.poll();
+                    }
+                    else {
+                        Poll::Pending
+                    }
+                }
+
+                State::State_End => {
+                    Poll::Ready(())
+                }
+                
+            }
+        }
+    }
+    ```
 
 
-### Future
+* By using state machine, we can ensure that we can call poll() function multiple time but some logic is not be executed more than once.
+
+    ![statemachine](images/statemachine.drawio.svg "statemachine")
+
+
+* The detail of how state machine work
+
+
+    ![1st_poll](images/1st_poll.drawio.svg "1st_poll")
+
+
+    ![2nd_poll](images/2nd_poll.drawio.svg "2nd_poll")
+
+
+    ![3rd_poll](images/3rd_poll.drawio.svg "3rd_poll")
 
 
