@@ -102,11 +102,4 @@ enum MyEnum {
 
 Size of an enum is the size of tag pluse size of biggest member.
 
-
-### 2.1. Nested Enum
-
-### 2.2. Enum usages
-
-#### 2.2.1. Matching pattern
-
-#### 2.2.2 Error handling
+Ref: [Enum section](../memory_layout/memory_layout.md#Enum)
