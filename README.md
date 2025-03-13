@@ -7,4 +7,4 @@
     * [Enum is not just an integer](docs/rust/enums/enums.md)
 
 * Others
-    * [Conditional Variable](docs/programming_concept/conditional_variable/conditional_variable.md)
+    * [Conditional Variable and how channel in Rust is implemented](docs/programming_concept/conditional_variable/conditional_variable.md)
