@@ -13,7 +13,7 @@
 ### Extractor
 
 
-* Extractor is just a type which implements *FromRequestParts*
+* Extractor is a type which implements *FromRequestParts*
 
 
 * There are several usefull extractors:
@@ -32,7 +32,10 @@
 ### How Handler takes various amount of Extractor
 
 
-* Axum use a macro like [all_the_tuples](https://github.com/tokio-rs/axum/blob/15917c6dbcb4a48707a20e9cfd021992a279a662/axum-core/src/macros.rs#L231 "github link") which allow a Handler to take zero or more extractors. 
+* Axum use a macro like [all_the_tuples](https://github.com/tokio-rs/axum/blob/15917c6dbcb4a48707a20e9cfd021992a279a662/axum-core/src/macros.rs#L231 "github link") to automatically implement Handler trait for any function which:
+    
+    * take zero or more extractors. 
+    
     * Maximum 16 extractors is allowed.
 
     * The last extractor must implement *FromRequest* trait
