@@ -34,10 +34,8 @@
 
 * Axum use a macro like [all_the_tuples](https://github.com/tokio-rs/axum/blob/15917c6dbcb4a48707a20e9cfd021992a279a662/axum-core/src/macros.rs#L231 "github link") to automatically implement Handler trait for any function which:
     
-    * take zero or more extractors. 
+    * take zero ->> 16 extractors. 
     
-    * Maximum 16 extractors is allowed.
-
     * The last extractor must implement *FromRequest* trait
     
     * The other extractor must implement *FromRequestParts* trait
