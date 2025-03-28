@@ -57,11 +57,9 @@ async fn create_user(
 }
 ```
 
-* Questions:
+* Qus: I do not see Service in the above code?
 
-    * I do not see Service in the above code?
-
-        * Ans: because Axum wraps Service up in form of Middleware or Handlers.
+    * Ans: because Axum use Middleware or Handler which eventually be converted to Service
 
 
 ### Tower Service
@@ -156,7 +154,7 @@ async fn create_user(
 * Qus: Handler is a Service ?
 
     * Ans: No. But a Handler will be converted into a Service
-    [all_the_tuples](https://docs.rs/axum/latest/axum/handler/trait.Handler.html#converting-handlers-into-services "docs.rs/axum/latest/axum/handler")
+    [Converting Handlers into Services](https://docs.rs/axum/latest/axum/handler/trait.Handler.html#converting-handlers-into-services "docs.rs/axum/latest/axum/handler")
 
 
 * Qus: How extractor work?
@@ -171,7 +169,20 @@ async fn create_user(
 ### Middleware
 
 ```rust
-code
+let routes_apis = web::routes_tickets::routes(mc.clone())
+    .route_layer(middleware::from_fn(web::mw_auth::mw_require_auth));
+
+let routes_all = Router::new()
+    .merge(routes_hello())
+    .merge(web::routes_login::routes())
+    .nest("/api", routes_apis)
+    .layer(middleware::map_response(main_response_mapper))
+    .layer(middleware::from_fn_with_state(
+        mc.clone(),
+        web::mw_auth::mw_ctx_resolver,
+    ))
+    .layer(CookieManagerLayer::new())
+    .fallback_service(routes_static());
 ```
 
 
@@ -200,7 +211,6 @@ pub fn get<H, T, S>(handler: H) -> MethodRouter<S, Infallible>
 // Route pass STATE to handler
 pub trait Handler<T, S>
 
-
 // Handler pass STATE to Extractor
 pub trait FromRequestParts<S>
 ```
@@ -208,4 +218,5 @@ pub trait FromRequestParts<S>
 * STATE is passed from Route -> Extractor.
     * But, at this time, STATE type is generic S type
 
-* Actually, the real type of STATE is inferred from Extractor
+* Actually, the concrete type of STATE is inferred from the State Extractor
+    * Once you call the *with_state()*, all Handlers are converted to Service right away, with the concrete State type
