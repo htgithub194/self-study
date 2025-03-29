@@ -206,7 +206,12 @@ TODO
 ```rust
 
 // S is STATE
+
+// get() return MethodRouter
 pub fn get<H, T, S>(handler: H) -> MethodRouter<S, Infallible>
+
+// MethodRouter call to Route. with State=() ???
+impl<B> Service<Request<B>> for Router<()>
 
 // Route pass STATE to handler
 pub trait Handler<T, S>
@@ -215,8 +220,12 @@ pub trait Handler<T, S>
 pub trait FromRequestParts<S>
 ```
 
-* STATE is passed from Route -> Extractor.
-    * But, at this time, STATE type is generic S type
+* Qus: Route take State=(). What STATE actually passed to Handler?
 
-* Actually, the concrete type of STATE is inferred from the State Extractor
-    * Once you call the *with_state()*, all Handlers are converted to Service right away, with the concrete State type
+    * Ans: 
+        * Actually, the concrete type of STATE is inferred from the State Extractor
+            * The moment you call the *with_state()*, all Handlers so far are converted to Service right away, with the concrete State type
+
+    ```rust
+    pub fn with_state<S2>(self, state: S) -> Router<S2>
+    ```
