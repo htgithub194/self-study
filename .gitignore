@@ -1,0 +1,53 @@
+# By Default, Ignore any .*, except .gitignore
+.*
+!.gitignore
+
+# Allows cargo config (for cargo envs)
+!.cargo/
+
+# Allows .env (for early developmment) 
+!.env
+
+# Allow vscode 
+# !.vscode
+
+# By default
+_*
+
+# --- Rust
+target/
+Cargo.lock
+# '_' in src dir, ok.
+!src/**/_*
+
+
+# nodejs accept test
+!.mocharc.yaml
+
+# --- Safety net
+dist/
+out/
+__pycache__/
+node_modules/
+npm-debug.log
+report.*.json
+
+*.lock
+
+*.parquet
+*.map
+*.zip
+*.gz
+*.tar
+*.tgz
+
+# videos
+*.mov
+*.mp4
+
+# images
+*.icns
+*.ico
+*.jpeg
+*.jpg
+*.png

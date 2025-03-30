@@ -1,0 +1,16 @@
+GET http://localhost:4000/
+
+###
+GET http://localhost:4000/hello_param?name=superman
+
+###
+GET http://localhost:4000/hello_path/batman
+
+###
+POST http://localhost:3000/users
+content-type: application/json
+
+{
+    "username": "batman",
+    "pwd": "123321"
+}
