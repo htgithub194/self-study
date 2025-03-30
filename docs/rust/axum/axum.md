@@ -93,6 +93,37 @@ async fn create_user(
         ![service_layer](images/service_layer.drawio.svg)
 
 
+
+### Middleware
+
+
+```rust
+let routes_all = Router::new()
+    .nest("/api", routes_apis)
+    .layer(middleware::map_response(logging))
+    .layer(middleware::from_fn_with_state(
+        app_state.clone(), token,
+    ))
+    .layer(CookieManagerLayer::new())
+
+
+pub async fn token(mut req: Request<Body>, next: Next) -> Result<Response> {
+    // do smt
+    Ok(next.run(req).await)
+}
+
+
+async fn logging(res: Response) -> Response {
+    // do smt
+    res
+}
+```
+
+
+![middleware](images/middleware.drawio.svg)
+
+
+
 ### Handler
 
 
@@ -123,7 +154,7 @@ async fn create_user(
         * the request's body part should be extracted at the last extractor 
 
 
-    * Ans 2: suitale func will be automatically imlp Handler trait by the macro
+    * Ans 2: suitable func will be automatically imlp Handler trait by the macro
     [all_the_tuples](https://github.com/tokio-rs/axum/blob/15917c6dbcb4a48707a20e9cfd021992a279a662/axum-core/src/macros.rs#L231 "github link")
 
         ```rust
@@ -160,71 +191,91 @@ async fn create_user(
 * Qus: How extractor work?
 
     * Ans: 
-    [impl_handler ](https://github.com/tokio-rs/axum/blob/62470bd5039c4a32b4454d0ceafbbca77c0d4874/axum/src/handler/mod.rs#L206 "axum github repo")
+    [impl_handler ](https://github.com/tokio-rs/axum/blob/62470bd5039c4a32b4454d0ceafbbca77c0d4874/axum/src/handler/mod.rs#L206 "axum/src/handler/mod.rs")
+
+
+* Qus: How IntoResponse work?
+
+    * Ans:
+    [impl_into_response](https://github.com/tokio-rs/axum/blob/62470bd5039c4a32b4454d0ceafbbca77c0d4874/axum-core/src/response/into_response.rs#L396 "axum-core/src/response/into_response.rs#L396")
 
 
 * Custom Extractor:
-    TODO
 
-### Middleware
+    ```rust
 
-```rust
-let routes_apis = web::routes_tickets::routes(mc.clone())
-    .route_layer(middleware::from_fn(web::mw_auth::mw_require_auth));
+    struct ExtData {}
 
-let routes_all = Router::new()
-    .merge(routes_hello())
-    .merge(web::routes_login::routes())
-    .nest("/api", routes_apis)
-    .layer(middleware::map_response(main_response_mapper))
-    .layer(middleware::from_fn_with_state(
-        mc.clone(),
-        web::mw_auth::mw_ctx_resolver,
-    ))
-    .layer(CookieManagerLayer::new())
-    .fallback_service(routes_static());
-```
+    impl <S: Send + Sync> FromRequestParts<S> for ExtData {
 
-
-![middleware](images/middleware.drawio.svg)
-
-
+        async fn from_request_parts(parts, _state) -> Result<Self> {
+            // extract data from parts & put to Self (ExtData)
+        }
+    }
+    ```
 
 ### State
 
 
-* State Extractor:
+* State is shared mutual data between services (handler/miiddleware)
 
-    * share mutual data between handler/middleware
-
-
-```rust
-TODO
-```
+* E.g: 
+    * 2 Requests are handled by 2 Handlers.
+    * The 2 Handlers both try to get the entry to Database from State.
+    * So, the State is a kind of global data, all services has access to State.
 
 
-```rust
+* Add State to Router:
 
-// S is STATE
+    ```rust
+    Struct AppState {
+        // ...
+    }
 
-// get() return MethodRouter
-pub fn get<H, T, S>(handler: H) -> MethodRouter<S, Infallible>
+    let app_state = AppState {...}
 
-// MethodRouter call to Route. with State=() ???
-impl<B> Service<Request<B>> for Router<()>
+    let routes_all = Router::new()
+        .nest("/api", routes_apis)
+        .layer(middleware::map_response(logging))
+        .layer(middleware::from_fn_with_state(
+            app_state.clone(), token,
+        ))
+        .layer(CookieManagerLayer::new())
+        .with_state(app_state)
+        ;
+    ```
 
-// Route pass STATE to handler
-pub trait Handler<T, S>
+* Add State Extractor to Handler:
 
-// Handler pass STATE to Extractor
-pub trait FromRequestParts<S>
-```
+    ```rust
+    async fn handler_with_state_extractor(
+        State(state) : State<AppState>,
+    ) -> Result<> {
+        // handler logic
+    }
+    ```
+
+
+* How state is passed to extractor:
+    ```rust
+    // get() return MethodRouter
+    pub fn get<H, T, S>(handler: H) -> MethodRouter<S, Infallible>
+
+    // MethodRouter call to Route. with State=() ???
+    impl<B> Service<Request<B>> for Router<()>
+
+    // Route pass STATE to handler
+    pub trait Handler<T, S>
+
+    // Handler pass STATE to Extractor
+    pub trait FromRequestParts<S>
+    ```
 
 * Qus: Route take State=(). What STATE actually passed to Handler?
 
     * Ans: 
         * Actually, the concrete type of STATE is inferred from the State Extractor
-            * The moment you call the *with_state()*, all Handlers so far are converted to Service right away, with the concrete State type
+        * The moment you call the *with_state()*, all Handlers so far are converted to Service right away, with the concrete State type
 
     ```rust
     pub fn with_state<S2>(self, state: S) -> Router<S2>
