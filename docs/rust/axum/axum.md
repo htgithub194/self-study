@@ -93,6 +93,7 @@ async fn create_user(
         ![service_layer](images/service_layer.drawio.svg)
 
 
+    * Refer: [Inventing the Service trait](https://tokio.rs/blog/2021-05-14-inventing-the-service-trait "tokio.rs")
 
 ### Middleware
 
