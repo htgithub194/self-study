@@ -2,6 +2,8 @@
 * Rust Axum
 
     * [Axum is so power full !](docs/rust/axum/axum.md)
+    
+    * [FromRef to extract sub-state](docs/rust/axum/FromRef.md)
 
 
 * Rust
