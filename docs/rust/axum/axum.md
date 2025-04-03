@@ -70,6 +70,12 @@ async fn create_user(
 
         ```rust
         pub trait Service<Request> {
+            
+            // back pressure
+            fn poll_ready(
+                &mut self,
+                cx: &mut Context<'_>,
+            ) -> Poll<Result<(), Self::Error>>;
 
             type Future: Future<Output = Result<Self::Response, Self::Error>>;
 
@@ -189,10 +195,13 @@ async fn logging(res: Response) -> Response {
     [Converting Handlers into Services](https://docs.rs/axum/latest/axum/handler/trait.Handler.html#converting-handlers-into-services "docs.rs/axum/latest/axum/handler")
 
 
-* Qus: How extractor work?
+* Qus: How extractor work?    
+
 
     * Ans: 
     [impl_handler ](https://github.com/tokio-rs/axum/blob/62470bd5039c4a32b4454d0ceafbbca77c0d4874/axum/src/handler/mod.rs#L206 "axum/src/handler/mod.rs")
+
+    * Refer for more: [extractor](extractor.md)
 
 
 * Qus: How IntoResponse work?
@@ -281,3 +290,24 @@ async fn logging(res: Response) -> Response {
     ```rust
     pub fn with_state<S2>(self, state: S) -> Router<S2>
     ```
+
+### Back pressure
+
+
+* Some Service has a limited Capacity ->> might has back pressure
+
+
+![back_pressure](images/back_pressure.dio.svg)
+
+
+* use poll_ready() to check the capacity first.
+
+    * E.g: 
+        
+        * If DB pool is full, return PENDDING ->> the request is pendding
+
+        * If DB pool is avaiable, connecto DB and call next Service
+
+
+
+![poll_ready](images/poll_ready.dio.svg)
