@@ -1,7 +1,7 @@
 
 * Linux kernel
 
-    * [#[Watchdog module]](docs/kernel/watchdog/watchdog.md)
+    * [Watchdog module](docs/kernel/watchdog/watchdog.md)
 
 
 
