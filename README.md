@@ -3,6 +3,8 @@
 
     * [Watchdog module](docs/kernel/watchdog/watchdog.md)
 
+    * [Preempt](docs/kernel/preempt/preempt.md)
+
 
 
 * Rust Axum:
