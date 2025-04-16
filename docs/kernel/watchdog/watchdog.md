@@ -11,7 +11,7 @@
 
     * If Counter = 0, Watchdog trigger machine to reboot
 
-    * When Kernel send PING to Watchdog, Counter is reloaded (set back to 600 sec)
+    * When machine send PING to Watchdog, Counter is reloaded (set back to 600 sec)
 
 
     ![watchdog](images/watchdog.dio.svg)
