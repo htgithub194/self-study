@@ -273,6 +273,13 @@ PING 192.168.100.20 (192.168.100.20): 56 data bytes
   ip netns exec $NET2 ip link set lo up
   ```
 
+* Note 1. Why macvlan?
+  * by default, netns does not have a MAC address
+  * So, we create a macvlan interface and move it into netns
+  * Kernel give macvlan interface an unique MAC address
+  * macvlan interface is bond to `eth0` where eth0 is `tap0`, and `tap0` has `br0` as master
+  * The flow of layer 2 is: netns -> macvlan interface -> `tap0` -> `br0`
+
 * Now the 2 netns can ping each other:
 
   ```shell
