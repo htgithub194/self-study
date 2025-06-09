@@ -29,12 +29,14 @@
 
     * [Preempt](docs/kernel/preempt/preempt.md)
 
+    * [Minirootfs Alpine & internet connection](docs/kernel/mini_alpine/mini_alpine.md)
 
 * Network
 
     * [Tunnel interface](docs/networking/tunnel/tunnel.md)
     
     * [QEMU Cluster](docs/networking/qemu_network/qemu.md)
+
 
 * Others
 
