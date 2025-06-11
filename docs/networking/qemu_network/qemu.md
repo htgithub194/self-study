@@ -85,7 +85,7 @@ sudo ip link set br0 up
 # config iptables for br0
 iptables -I FORWARD -p all -i br0 -j ACCEPT
 iptables -I INPUT -p all -i br0 -j ACCEPT
-iptables -I OUTPUT -p all -i br0 -j ACCEPT
+iptables -I OUTPUT -p all -o br0 -j ACCEPT
 
 # create tap device
 sudo ip tuntap add dev tap0 mode tap user $USER

@@ -98,7 +98,7 @@
 * Make initrd
 
     ```shell
-     mkinitfs -F "base,virtio" -k 6.12.31-0-virt
+     mkinitfs -F "base virtio" -k 6.12.31-0-virt
     ==> initramfs: creating /boot/initramfs-virt for 6.12.31-0-virt
     ```
 
@@ -106,7 +106,6 @@
 
         * by default, mkinitfs builds features inside `/etc/mkinitfs/mkinitfs.conf`,
         * but, it not work in my env, so I specify it in the call to `mkinitfs`
-        * Or: `mkinitfs -c /path/to/conf -F "features" -k <version>`
 
     * Note 1. `/etc/mkinitfs/mkinitfs.conf` contain features for initrd
 
@@ -127,6 +126,16 @@
         # Additional files (optional, if not using feature.d/*.files)
         add_files="/sbin/openrc-init /bin/sh"
         ```
+
+    * Note 2. files & modules are defined at `/etc/mkinitfs/features.d`
+        * E.g: define new features
+            ```shell
+            /etc/mkinitfs/features.d # cat netfilter.modules 
+            kernel/net/netfilter/*
+
+            /etc/mkinitfs/features.d # cat netfilter.files
+            /usr/sbin/ipvsadm
+            ```
 
 * QEMU boot
 
