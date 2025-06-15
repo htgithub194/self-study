@@ -27,6 +27,37 @@
 
 ### Goal 1
 
+#### Steps:
+
+```shell
+#
+wget https://dl-cdn.alpinelinux.org/alpine/v3.22/releases/x86_64/alpine-minirootfs-3.22.0-x86_64.tar.gz
+#
+mkdir rootfs
+tar -xzf alpine-minirootfs-3.22.0-x86_64.tar.gz -C rootfs
+#
+cd rootfs
+#
+mount --bind /proc proc
+mount --bind /dev dev
+mount --bind /sys sys
+#
+echo "nameserver 8.8.8.8" > etc/resolv.conf
+#
+chroot . /bin/sh
+#
+apk add alpine-base linux-virt mkinitfs
+#   /lib/modules/6.12.31-0-virt
+mkinitfs -k 6.12.31-0-virt
+
+
+# images located at boot
+ls /boot
+```
+
+
+#### Detail each steps:
+
 * Download minirootfs from alpine homepage
 
     ```shell
@@ -248,3 +279,44 @@
         3 packets transmitted, 3 packets received, 0% packet loss
         round-trip min/avg/max = 51.227/51.231/51.240 ms
         ```
+
+
+### Active APK
+
+* First call to `apk` was failed
+
+```shell
+$ apk update
+ERROR: Unable to lock database: No such file or directory
+ERROR: Failed to open apk database: No such file or directory
+```
+
+* The reason is mini-rootfs does not have 3 files/direct: `/etc/apk/world` and `/var/lib/` and `/lib/apk/db`
+    * Just create the 2 files/dir
+    ```shell
+    #
+    touch /etc/apk/world
+    # must add `alpine-base` 
+    echo "alpine-base" > /etc/apk/world
+    echo "openssl" >> /etc/apk/world
+
+    #
+    mkdir -p /var/lib
+    mkdir -p /lib/apk/db
+
+    # this will work
+    apk update
+    ```
+
+* Note: 
+    * the lock database is just a file located in `/lib/apk/db/lock`
+
+    * Edit repository Url:
+    ```shell
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.22/main" > /etc/apk/repositories
+    ```
+
+    * Add openrc:
+    ```shell
+    apk fix openrc
+    ```
