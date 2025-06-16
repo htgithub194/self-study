@@ -320,3 +320,26 @@ ERROR: Failed to open apk database: No such file or directory
     ```shell
     apk fix openrc
     ```
+
+### Active Openssh
+
+```shell
+# install
+apk add openssh
+
+# create dummy user and keygen
+echo 'sshd:x:50:50:sshd:/var/empty:/sbin/nologin' >> /etc/passwd
+/usr/bin/ssh-keygen -A
+
+# Start
+/usr/sbin/sshd -D -e &
+```
+
+```shell
+# restart sshd
+# Stop if running
+pkill sshd
+
+# Start fresh
+/usr/sbin/sshd -D -e &
+```
