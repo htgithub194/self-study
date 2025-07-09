@@ -1,0 +1,13 @@
+/* Make the header (navbar) background transparent */
+.md-header {
+  background-color: transparent !important;
+  backdrop-filter: blur(10px); /* Optional: for frosted glass effect */
+  box-shadow: none; /* Remove shadow */
+}
+
+/* Optional: make the nav links more visible */
+.md-header__title,
+.md-tabs,
+.md-header__option {
+  color: white !important; /* or any color that fits your background */
+}

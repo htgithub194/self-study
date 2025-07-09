@@ -1,0 +1,14 @@
+.tag-cloud a {
+  text-decoration: none;
+  margin: 4px;
+  padding: 4px;
+  display: inline-block;
+  color: #555;
+  font-weight: bold;
+}
+
+.tag-cloud a[data-size="1"] { font-size: 0.8em; }
+.tag-cloud a[data-size="2"] { font-size: 1.0em; }
+.tag-cloud a[data-size="3"] { font-size: 1.2em; }
+.tag-cloud a[data-size="4"] { font-size: 1.4em; }
+.tag-cloud a[data-size="5"] { font-size: 1.6em; }
