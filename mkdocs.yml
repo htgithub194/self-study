@@ -46,3 +46,17 @@ nav:
 extra_css:
   - styles/horizontal_nav_bar.css
   - styles/tags.css
+
+markdown_extensions:
+    - pymdownx.highlight:
+        anchor_linenums: true
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - admonition
+    - pymdownx.arithmatex:
+        generic: true
+    - footnotes
+    - pymdownx.details
+    - pymdownx.superfences
+    - pymdownx.mark
+    - attr_list

@@ -27,8 +27,7 @@
 
     ![small_infra](images/small_infra.drawio.svg "Infrastructure of Axum")
 
-
-```rust
+```java
 // example from: https://crates.io/crates/axum
 #[tokio::main]
 async fn main() {
@@ -67,36 +66,35 @@ async fn create_user(
 * Trait *Service*:
 
     * Turn Request ->> Response
+```rust
+pub trait Service<Request> {
+    
+    // back pressure
+    fn poll_ready(
+        &mut self,
+        cx: &mut Context<'_>,
+    ) -> Poll<Result<(), Self::Error>>;
 
-        ```rust
-        pub trait Service<Request> {
-            
-            // back pressure
-            fn poll_ready(
-                &mut self,
-                cx: &mut Context<'_>,
-            ) -> Poll<Result<(), Self::Error>>;
+    type Future: Future<Output = Result<Self::Response, Self::Error>>;
 
-            type Future: Future<Output = Result<Self::Response, Self::Error>>;
-
-            fn call(&mut self, req: Request) -> Self::Future;
-        }
-        ```
+    fn call(&mut self, req: Request) -> Self::Future;
+}
+```
 
 
 * Trait *Layer*:
 
-    * To stack up Services
+    * To stack up Services:
 
-        ```rust
-        pub trait Layer<S> {
-            type Service;
+```rust
+pub trait Layer<S> {
+    type Service;
 
-        fn layer(&self, inner: S) -> Self::Service;
-        }
-        ```
+fn layer(&self, inner: S) -> Self::Service;
+}
+```
 
-        ![service_layer](images/service_layer.drawio.svg)
+![service_layer](images/service_layer.drawio.svg)
 
 
     * Refer: [Inventing the Service trait](https://tokio.rs/blog/2021-05-14-inventing-the-service-trait "tokio.rs")
@@ -164,29 +162,29 @@ async fn logging(res: Response) -> Response {
     * Ans 2: suitable func will be automatically imlp Handler trait by the macro
     [all_the_tuples](https://github.com/tokio-rs/axum/blob/15917c6dbcb4a48707a20e9cfd021992a279a662/axum-core/src/macros.rs#L231 "github link")
 
-        ```rust
-        #[rustfmt::skip]
-        macro_rules! all_the_tuples {
-            ($name:ident) => {
-                $name!([], T1);
-                $name!([T1], T2);
-                $name!([T1, T2], T3);
-                $name!([T1, T2, T3], T4);
-                $name!([T1, T2, T3, T4], T5);
-                $name!([T1, T2, T3, T4, T5], T6);
-                $name!([T1, T2, T3, T4, T5, T6], T7);
-                $name!([T1, T2, T3, T4, T5, T6, T7], T8);
-                $name!([T1, T2, T3, T4, T5, T6, T7, T8], T9);
-                $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9], T10);
-                $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9, T10], T11);
-                $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11], T12);
-                $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12], T13);
-                $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13], T14);
-                $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14], T15);
-                $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15], T16);
-            };
-        }
-        ```
+```rust
+#[rustfmt::skip]
+macro_rules! all_the_tuples {
+    ($name:ident) => {
+        $name!([], T1);
+        $name!([T1], T2);
+        $name!([T1, T2], T3);
+        $name!([T1, T2, T3], T4);
+        $name!([T1, T2, T3, T4], T5);
+        $name!([T1, T2, T3, T4, T5], T6);
+        $name!([T1, T2, T3, T4, T5, T6], T7);
+        $name!([T1, T2, T3, T4, T5, T6, T7], T8);
+        $name!([T1, T2, T3, T4, T5, T6, T7, T8], T9);
+        $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9], T10);
+        $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9, T10], T11);
+        $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11], T12);
+        $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12], T13);
+        $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13], T14);
+        $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14], T15);
+        $name!([T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15], T16);
+    };
+}
+```
 
 
 * Qus: Handler is a Service ?
@@ -212,17 +210,17 @@ async fn logging(res: Response) -> Response {
 
 * Custom Extractor:
 
-    ```rust
+```rust
 
-    struct ExtData {}
+struct ExtData {}
 
-    impl <S: Send + Sync> FromRequestParts<S> for ExtData {
+impl <S: Send + Sync> FromRequestParts<S> for ExtData {
 
-        async fn from_request_parts(parts, _state) -> Result<Self> {
-            // extract data from parts & put to Self (ExtData)
-        }
+    async fn from_request_parts(parts, _state) -> Result<Self> {
+        // extract data from parts & put to Self (ExtData)
     }
-    ```
+}
+```
 
 ### State
 
@@ -237,49 +235,49 @@ async fn logging(res: Response) -> Response {
 
 * Add State to Router:
 
-    ```rust
-    Struct AppState {
-        // ...
-    }
+```rust
+Struct AppState {
+    // ...
+}
 
-    let app_state = AppState {...}
+let app_state = AppState {...}
 
-    let routes_all = Router::new()
-        .nest("/api", routes_apis)
-        .layer(middleware::map_response(logging))
-        .layer(middleware::from_fn_with_state(
-            app_state.clone(), token,
-        ))
-        .layer(CookieManagerLayer::new())
-        .with_state(app_state)
-        ;
-    ```
+let routes_all = Router::new()
+    .nest("/api", routes_apis)
+    .layer(middleware::map_response(logging))
+    .layer(middleware::from_fn_with_state(
+        app_state.clone(), token,
+    ))
+    .layer(CookieManagerLayer::new())
+    .with_state(app_state)
+    ;
+```
 
 * Add State Extractor to Handler:
 
-    ```rust
-    async fn handler_with_state_extractor(
-        State(state) : State<AppState>,
-    ) -> Result<> {
-        // handler logic
-    }
-    ```
+```rust
+async fn handler_with_state_extractor(
+    State(state) : State<AppState>,
+) -> Result<> {
+    // handler logic
+}
+```
 
 
 * How state is passed to extractor:
-    ```rust
-    // get() return MethodRouter
-    pub fn get<H, T, S>(handler: H) -> MethodRouter<S, Infallible>
+```rust
+// get() return MethodRouter
+pub fn get<H, T, S>(handler: H) -> MethodRouter<S, Infallible>
 
-    // MethodRouter call to Route. with State=() ???
-    impl<B> Service<Request<B>> for Router<()>
+// MethodRouter call to Route. with State=() ???
+impl<B> Service<Request<B>> for Router<()>
 
-    // Route pass STATE to handler
-    pub trait Handler<T, S>
+// Route pass STATE to handler
+pub trait Handler<T, S>
 
-    // Handler pass STATE to Extractor
-    pub trait FromRequestParts<S>
-    ```
+// Handler pass STATE to Extractor
+pub trait FromRequestParts<S>
+```
 
 * Qus: Route take State=(). What STATE actually passed to Handler?
 
@@ -287,9 +285,9 @@ async fn logging(res: Response) -> Response {
         * Actually, the concrete type of STATE is inferred from the State Extractor
         * The moment you call the *with_state()*, all Handlers so far are converted to Service right away, with the concrete State type
 
-    ```rust
-    pub fn with_state<S2>(self, state: S) -> Router<S2>
-    ```
+```rust
+pub fn with_state<S2>(self, state: S) -> Router<S2>
+```
 
 ### Back pressure
 
