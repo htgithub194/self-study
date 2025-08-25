@@ -1,0 +1,18 @@
+/* :root {
+  --content-top: 80px;
+} */
+
+section.slide-base h2 {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 64px !important;  /* or 2rem */
+    color: #ffcc66;
+}
+/* 
+section ul {
+    position: absolute;
+    top: 150px;
+    left: 40px;
+    font-size: 32px !important;
+} */
