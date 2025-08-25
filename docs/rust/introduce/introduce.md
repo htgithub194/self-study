@@ -1,6 +1,6 @@
 ---
 marp: true
-theme: uncover
+theme: default
 class: invert
 style: |
   @import './theme.css';
@@ -8,7 +8,7 @@ paginate: true
 ---
 
 # Brieft introduction to Rust
-**ThongDinh ft DatDinh**
+**ThongDinh -ft- DatDinh**
 
 ---
 <!-- _class: slide-base invert-->
@@ -79,7 +79,7 @@ paginate: true
 <!-- _class: slide-base invert-->
 ## Ownership model
 
-![bg height: 75%](images/ownership.excalidraw.svg)
+![bg height: 95%](images/ownership.excalidraw.svg)
 
 
 ---
