@@ -7,6 +7,14 @@ style: |
 paginate: true
 ---
 
+<style>
+img[alt~="top-right"] {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}
+</style>
+
 # Brieft introduction to Rust
 **ThongDinh -ft- DatDinh**
 
@@ -17,63 +25,166 @@ paginate: true
 - Get to know Rust
   - History of Rust
   - Notable features
-  - How Rust invovles in our world
 - Get dive deeper to know Rust
-  - Why Rust is memory safety
-  - Why Rust is fast
+  - How Rust archives memory safety
+
+---
+<!-- _class: slide-base invert-->
+## A. Get to know Rust
+  - History of Rust
+  - Notable features
+
+---
+<!-- _class: slide-base invert-->
+## History of Rust
+  - When: 2006
+  - Who: Graydon Hoare, engineer at *Mozilla Research*
+  - What: 
+    - Offered high performance of C/C++ 
+    - With guaranteed memory safety
+  - Which:
+    - linux kernel, OS, OS-utilities
+    - block chain, wasm
+    - backend
+    - ...
+![top-right](images/author.png)
+
+---
+<!-- _class: slide-base invert-->
+## Rust inside
+
+![bg height: 80%](images/which.excalidraw.svg)
+
+---
+<!-- _class: slide-base invert-->
+## Sponsors
+![bg height: 60%](images/sponsor.png)
+
+---
+<!-- _class: slide-base invert-->
+## Notable Features 
+
+![bg height: 50%](images/features.excalidraw.svg)
+
+---
+<!-- _class: slide-base invert-->
+## Memory Safety. Rust vs C/C++
+
+- C/C++ easily to have error:
+  - dangling pointers:
+    - use-after-free
+    - double-free
+    - buffer overflows
+
+- Rust Compiler:
+  - Throws errors on compilation if it detect codes violate it's rules. 
+  - Virtually guaranteed to be memory-safe if compile successfully
+
+---
+<!-- _class: slide-base invert-->
+## Memory Safety. Rust vs Java/Go
+
+- Java/Go use GC:
+  - Automatically finds and removes unused objects in the heap.
+  - Pros:
+    - Ease of Development + Platform Independence
+  - Cons:
+    - CPU Overhead + Unpredictable Pauses + extra memory for GC (bloat)
+
+- Rust use NO GC:
+  - no runtime overhead
+  - no extra memory
+
+---
+<!-- _class: slide-base invert-->
+## Performance
+
+- Build to native machine code --> fast ~ C/C++
+- No GC -> faster than Java, Go
+- Zero-cost abstraction (same as C++ if not using vtable)
+- Fearless concurency by the advantage of Ownership model
+
+---
+<!-- _class: slide-base invert-->
+## Performance
+
+![bg height: 55%](images/performance.png)
+
+[source](https://medium.com/star-gazers/benchmarking-low-level-i-o-c-c-rust-golang-java-python-9a0d505f85f7)
+
+
+---
+<!-- _class: slide-base invert-->
+## Performance: benchmark vs C
+
+https://programming-language-benchmarks.vercel.app/c-vs-rust
+
+---
+<!-- _class: slide-base invert-->
+## Performance: benchmark vs GO
+
+![bg height: 65%](images/rust-vs-go-http-performance-2025.svg)
+
+[source](https://markaicode.com/rust-vs-go-performance-benchmarks-microservices-2025/?utm_source=chatgpt.com)
+
+---
+<!-- _class: slide-base invert-->
+## Concurrency
+- "Fearless Concurrency":
+  - No data race by the advantage of Ownership model
+- Offers modern concurrency paradigms:
+  - Message passing via Channel
+  - async/await
+
+---
+<!-- _class: slide-base invert-->
+## Speed: concurrent programming
+
+![](images/concurency_cmp.drawio.svg)
+
+- source: trust me bro
+
 
 ---
 <!-- _class: slide-base invert-->
 ## Take away 1:
 - Pros:
-    memory safe
-    speed
+    - Guarantee to be memory safe
+    - Offer high speed approximate to C/C++
 - Cons:
-    hard to learn
-    cost time to compile
+    - Hard to learn at the beginning
+    - Compilation cost a lot of time due to checking alot of rules
 
+
+---
+<!-- _class: slide-base invert-->
+## B. Dive deeper
+  - How Rust archives memory safety
 
 ---
 <!-- _class: slide-base invert-->
 ## Memory unsafety in C/C++
-- **Dangling pointers**: accessing memory after freeing
-- **Double free**: freeing the same memory twice.
-- **Memory leaks**: never freeing memory.
-- Data Races in Multithreading
-- Buffer Overflows / Out-of-Bounds Access
 
----
-<!-- _class: slide-base invert-->
-## Garbage Collection in Java
-
-- Automatically finds and removes unused objects in the heap.
-- Pros:
-  - Ease of Development
-  - Platform Independence.
-- Cons:
-  - Unpredictable Pauses
-  - CPU Overhead
-  - Bloat: extra memory for GC
+![bg height: 90%](images/unsafe.excalidraw.svg)
 
 ---
 <!-- _class: slide-base invert-->
 ## How Rust archives memory safety
 
-![bg height: 40%](images/rules.png)
+![bg width: 40%](images/rules.png)
 
 ---
 <!-- _class: slide-base invert-->
 ## How Rust archives memory safety
-- Ownership model
-- Lifetimes
-- Communicate threads for sharing data
+
+![bg height: 70%](images/archives.excalidraw.svg)
 
 ---
 <!-- _class: slide-base invert-->
 ## Ownership model
-- Enforce safety at compile time by RULES
-- reference and mutable-reference
-- Value can only be edited from 1 point
+
+![bg height: 70%](images/ownership2.excalidraw.svg)
+
 
 ---
 <!-- _class: slide-base invert-->
@@ -92,38 +203,21 @@ paginate: true
 ---
 <!-- _class: slide-base invert-->
 ## Multithread
-- “Do not communicate by sharing memory
-instead, share memory by communicating.”
+
+![bg height: 100%](images/sync_send.excalidraw.svg)
 
 ---
 <!-- _class: slide-base invert-->
-## Multithread
+## Multithread. Sharing Ownership
 
 ![bg height: 100%](images/threads.excalidraw.svg)
 
-
 ---
 <!-- _class: slide-base invert-->
-## Speed
--  Build to native machine code --> fast ~ C/C++
-- No GC -> faster than Java, Go, Python
-- Zero-cost abstraction (same as C++)
-- Optimized LLVM Backend (compiler)
-- Support concurrent programming
+## Multithread. Sharing Reference
 
----
-<!-- _class: slide-base invert-->
-## Speed benchmark vs C
+![bg height: 100%](images/share_ref.excalidraw.svg)
 
-https://programming-language-benchmarks.vercel.app/c-vs-rust
-
----
-<!-- _class: slide-base invert-->
-## Speed benchmark vs GO
-
-![bg height: 65%](images/rust-vs-go-http-performance-2025.svg)
-
-- https://markaicode.com/rust-vs-go-performance-benchmarks-microservices-2025/?utm_source=chatgpt.com
 
 
 ---

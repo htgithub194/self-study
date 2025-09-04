@@ -1,4 +1,5 @@
 site_name: htgithub94
+site_url: https://htgithub194.github.io/
 theme:
   name: material
   palette:
@@ -15,7 +16,7 @@ extra:
     index_page: tags.md 
 
 nav:
-  - Home: mkdocs.md
+  - Home: index.md
 
   - Brieft introduction to Rust: rust/introduce/introduce.html
 
