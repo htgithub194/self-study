@@ -1,0 +1,93 @@
+<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title and Background -->
+  <rect width="800" height="500" fill="#f8f9fa"/>
+  <text x="400" y="40" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#333">HTTP Service Performance: Rust vs Go (2025)</text>
+  
+  <!-- Chart Area -->
+  <g transform="translate(100, 80)">
+    <!-- Y-axis and grid lines -->
+    <line x1="0" y1="0" x2="0" y2="320" stroke="#ccc" stroke-width="1"/>
+    
+    <!-- X-axis -->
+    <line x1="0" y1="320" x2="650" y2="320" stroke="#ccc" stroke-width="1"/>
+    
+    <!-- Chart Title -->
+    <text x="325" y="-20" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#555">Comparing Key Performance Metrics</text>
+    
+    <!-- Legend -->
+    <rect x="500" y="0" width="15" height="15" fill="#B23C17" opacity="0.8"/>
+    <text x="525" y="13" font-family="Arial, sans-serif" font-size="14" fill="#333">Rust (Axum)</text>
+    
+    <rect x="500" y="25" width="15" height="15" fill="#00ADD8" opacity="0.8"/>
+    <text x="525" y="38" font-family="Arial, sans-serif" font-size="14" fill="#333">Go (Gin)</text>
+    
+    <!-- Data Groups -->
+    <!-- Throughput (normalized for visualization) -->
+    <g transform="translate(80, 0)">
+      <text x="0" y="350" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#333">Throughput</text>
+      <text x="0" y="370" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">(req/sec, thousands)</text>
+      
+      <rect x="-30" y="30" width="25" height="290" fill="#B23C17" opacity="0.8"/>
+      <rect x="5" y="105" width="25" height="215" fill="#00ADD8" opacity="0.8"/>
+      
+      <text x="-18" y="25" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#333">187.5k</text>
+      <text x="17" y="100" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#333">142.4k</text>
+    </g>
+    
+    <!-- Latency p50 -->
+    <g transform="translate(230, 0)">
+      <text x="0" y="350" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#333">Latency p50</text>
+      <text x="0" y="370" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">(ms, lower is better)</text>
+      
+      <rect x="-30" y="295" width="25" height="25" fill="#B23C17" opacity="0.8"/>
+      <rect x="5" y="283" width="25" height="37" fill="#00ADD8" opacity="0.8"/>
+      
+      <text x="-18" y="290" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#333">0.52</text>
+      <text x="17" y="278" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#333">0.68</text>
+    </g>
+    
+    <!-- Latency p99 -->
+    <g transform="translate(380, 0)">
+      <text x="0" y="350" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#333">Latency p99</text>
+      <text x="0" y="370" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">(ms, lower is better)</text>
+      
+      <rect x="-30" y="275" width="25" height="45" fill="#B23C17" opacity="0.8"/>
+      <rect x="5" y="250" width="25" height="70" fill="#00ADD8" opacity="0.8"/>
+      
+      <text x="-18" y="270" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#333">1.27</text>
+      <text x="17" y="245" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#333">1.85</text>
+    </g>
+    
+    <!-- Memory usage -->
+    <g transform="translate(530, 0)">
+      <text x="0" y="350" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#333">Memory Usage</text>
+      <text x="0" y="370" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">(MB, lower is better)</text>
+      
+      <rect x="-30" y="260" width="25" height="60" fill="#B23C17" opacity="0.8"/>
+      <rect x="5" y="220" width="25" height="100" fill="#00ADD8" opacity="0.8"/>
+      
+      <text x="-18" y="255" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#333">18.3</text>
+      <text x="17" y="215" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#333">27.6</text>
+    </g>
+    
+    <!-- Performance Difference Callouts -->
+    <g transform="translate(80, 420)">
+      <text x="0" y="-30" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#B23C17">+31.7%</text>
+    </g>
+    
+    <g transform="translate(230, 420)">
+      <text x="0" y="-30" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#B23C17">-23.5%</text>
+    </g>
+    
+    <g transform="translate(380, 420)">
+      <text x="0" y="-30" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#B23C17">-31.4%</text>
+    </g>
+    
+    <g transform="translate(530, 420)">
+      <text x="0" y="-30" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#B23C17">-33.7%</text>
+    </g>
+  </g>
+  
+  <!-- Source note -->
+  <text x="400" y="485" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">Source: Comprehensive benchmark tests on AMD Ryzen 9 7950X, 64GB RAM, Ubuntu 24.04</text>
+</svg>
