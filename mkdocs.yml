@@ -35,6 +35,7 @@ nav:
     - FromRef to extract sub-state: rust/axum/FromRef.md
 
   - Linux kernel:
+    - Crash recovery and debugging: kernel/crash_recovery/crash_recovery.md
     - Watchdog module: kernel/watchdog/watchdog.md
     - Preempt: kernel/preempt/preempt.md
     - Minirootfs Alpine & internet connection: kernel/mini_alpine/mini_alpine.md

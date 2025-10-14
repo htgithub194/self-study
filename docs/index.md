@@ -8,6 +8,8 @@
 
 * Rust basic:
 
+    * [Brieft introduction to Rust](rust/introduce/introduce.html)
+
     * [Async Await are just the key words for Concurrency](rust/async/async.md)
     
     * [Memory layout of some data types](rust/memory_layout/memory_layout.md)
@@ -24,6 +26,8 @@
 
 
 * Linux kernel
+
+    * [Crash recovery and debugging](kernel/crash_recovery/crash_recovery.md)
 
     * [Watchdog module](kernel/watchdog/watchdog.md)
 
