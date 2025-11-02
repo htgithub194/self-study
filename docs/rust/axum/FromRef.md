@@ -12,7 +12,9 @@
         cf: Config,
     }
     ```
-* Now, suppose one of your handlers only needs access to `db`.
+
+
+* Suppose one of your handlers only needs access to `db`.
 You could store separate `Arc<Database>` and `Arc<Config>` in the router, but that’s messy.
 
     ![fromref](images/fromref_problem.excalidraw.svg)
@@ -32,6 +34,9 @@ You could store separate `Arc<Database>` and `Arc<Config>` in the router, but th
 ## How FromRef is implemented
 
 * The key point is if a handler has an `AppState` — how can it turn that into a `Database`?
+
+    ![fromref](images/fromref_flow.excalidraw.svg)
+
 
 * That’s where this trait comes in:
     ```rust
