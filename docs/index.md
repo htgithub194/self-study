@@ -41,6 +41,8 @@
     
     * [QEMU Cluster](networking/qemu_network/qemu.md)
 
+* Design Patterns:
+    * [Observer and Mediator](programming_concept/design_patterns/observer_mediator.md)
 
 * Others
 

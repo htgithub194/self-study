@@ -44,6 +44,9 @@ nav:
     - Tunnel interface: networking/tunnel/tunnel.md
     - QEMU Cluster: networking/qemu_network/qemu.md
 
+  - Design Patterns:
+    - Observer and Mediator: programming_concept/design_patterns/observer_mediator.md
+
   - Others:
       - Conditional Variable & Rust channel: programming_concept/conditional_variable/conditional_variable.md
       - Dependency Injection: programming_concept/dependency_injection/dependency_injection.md
